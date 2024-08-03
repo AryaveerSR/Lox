@@ -1,4 +1,5 @@
 #include <stdio.h>
+
 #include "debug.h"
 
 int main(int argc, char const *argv[])
@@ -14,7 +15,7 @@ int main(int argc, char const *argv[])
 	write_chunk(&chunk, index, 124);
 	write_chunk(&chunk, OP_RETURN, 124);
 
-	disassemble_chunk(&chunk, "== BRILLIANT CHUNK OF DATA ==");
+	disassemble_chunk(&chunk, "BRILLIANT CHUNK OF DATA");
 
 	free_chunk(&chunk);
 

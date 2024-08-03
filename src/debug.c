@@ -1,4 +1,5 @@
 #include <stdio.h>
+
 #include "debug.h"
 #include "value.h"
 
@@ -25,7 +26,7 @@ static size_t print_constant_instruction(Chunk *chunk, size_t offset)
  */
 size_t disassemble_instruction(Chunk *chunk, size_t offset)
 {
-    printf("%04d ", offset);
+    printf("%04ld ", offset);
 
     // If the current instruction is from the same line of source
     // as the previous one, do not print the line number, and indent
@@ -36,7 +37,7 @@ size_t disassemble_instruction(Chunk *chunk, size_t offset)
     }
     else
     {
-        printf("%-4d ", chunk->lines[offset]);
+        printf("%-4ld ", chunk->lines[offset]);
     }
 
     uint8_t instruction = chunk->code[offset];
