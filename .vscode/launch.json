@@ -5,7 +5,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/tetris",
+            "program": "${workspaceFolder}/bin/lox",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
