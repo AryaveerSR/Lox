@@ -28,18 +28,6 @@ size_t disassemble_instruction(Chunk *chunk, size_t offset)
 {
     printf("%04ld ", offset);
 
-    // If the current instruction is from the same line of source
-    // as the previous one, do not print the line number, and indent
-    // the output to make the grouping clear.
-    if ((offset > 0) && (chunk->lines[offset] == chunk->lines[offset - 1]))
-    {
-        printf("     ");
-    }
-    else
-    {
-        printf("%-4ld ", chunk->lines[offset]);
-    }
-
     uint8_t instruction = chunk->code[offset];
 
     switch (instruction)
@@ -63,10 +51,20 @@ void disassemble_chunk(Chunk *chunk, const char *name)
 {
     printf("== %s ==\n", name);
 
-    // Loops through the chunk op-code to op-code, by setting
-    // the offset to after one instruction's end (next one's start).
-    for (size_t offset = 0; offset < chunk->count;)
+    size_t offset = 0;
+    size_t prev_offset = 0;
+
+    for (size_t line_unit_offset = 0; line_unit_offset < chunk->line_count; line_unit_offset++)
     {
+        printf("%-4d ", chunk->lines[line_unit_offset].line);
         offset = disassemble_instruction(chunk, offset);
+
+        while (offset < prev_offset + chunk->lines[line_unit_offset].spans)
+        {
+            printf("     ");
+            offset = disassemble_instruction(chunk, offset);
+        }
+
+        prev_offset = offset;
     }
 }
