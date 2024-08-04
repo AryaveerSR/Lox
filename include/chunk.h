@@ -8,12 +8,15 @@ typedef enum
 {
     OP_RETURN,
     OP_CONST,
+    OP_CONST_LONG,
 } OpCode;
+
+typedef uint16_t Line;
 
 typedef struct
 {
     // The line number in source file.
-    uint16_t line;
+    Line line;
     // The number of consecutive bytes in the chunk that originate
     // from the same line.
     uint8_t spans;
@@ -33,9 +36,12 @@ typedef struct
 } Chunk;
 
 void init_chunk(Chunk *chunk);
-void write_chunk(Chunk *chunk, uint8_t byte, size_t line);
-uint16_t get_line(Chunk *chunk, size_t index);
-size_t add_const(Chunk *chunk, Value value);
+void write_chunk(Chunk *chunk, uint8_t byte, Line line);
 void free_chunk(Chunk *chunk);
+
+Line get_line(Chunk *chunk, size_t index);
+
+size_t add_const(Chunk *chunk, Value value);
+void write_const(Chunk *chunk, Value value, Line line);
 
 #endif

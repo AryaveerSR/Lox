@@ -20,6 +20,20 @@ static size_t print_constant_instruction(Chunk *chunk, size_t offset)
     return offset + 2;
 }
 
+static size_t print_long_constant_instruction(Chunk *chunk, size_t offset)
+{
+    uint32_t constant =
+        chunk->code[offset + 1] |
+        (chunk->code[offset + 2] << 8) |
+        (chunk->code[offset + 3] << 16);
+
+    printf("%-16s %4d (", "OP_CONST_LONG", constant);
+    print_value(chunk->constants.values[constant]);
+    printf(")\n");
+
+    return offset + 4;
+}
+
 /*
  * Pretty prints a single instruction and all related operands.
  * Returns the number of bytes it actually occupies (incl. the operands).
@@ -37,6 +51,9 @@ size_t disassemble_instruction(Chunk *chunk, size_t offset)
 
     case OP_CONST:
         return print_constant_instruction(chunk, offset);
+
+    case OP_CONST_LONG:
+        return print_long_constant_instruction(chunk, offset);
 
     default:
         printf("Unknown opcode (%d)", instruction);

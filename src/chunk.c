@@ -16,7 +16,7 @@ void init_chunk(Chunk *chunk)
     init_value_array(&chunk->constants);
 }
 
-void write_chunk(Chunk *chunk, uint8_t byte, size_t line)
+void write_chunk(Chunk *chunk, uint8_t byte, Line line)
 {
     if (chunk->count + 1 > chunk->capacity)
     {
@@ -76,6 +76,24 @@ size_t add_const(Chunk *chunk, Value value)
 {
     write_value_array(&chunk->constants, value);
     return chunk->constants.count - 1;
+}
+
+void write_const(Chunk *chunk, Value value, Line line)
+{
+    size_t constant_index = add_const(chunk, value);
+
+    if (constant_index < 256)
+    {
+        write_chunk(chunk, OP_CONST, line);
+        write_chunk(chunk, (uint8_t)(constant_index), line);
+    }
+    else
+    {
+        write_chunk(chunk, OP_CONST_LONG, line);
+        write_chunk(chunk, (uint8_t)(constant_index & 0xff), line);
+        write_chunk(chunk, (uint8_t)((constant_index & 0xff00) >> 8), line);
+        write_chunk(chunk, (uint8_t)((constant_index & 0xff0000) >> 16), line);
+    }
 }
 
 void free_chunk(Chunk *chunk)
