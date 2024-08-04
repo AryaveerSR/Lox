@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "memory.h": "c",
-        "chunk.h": "c",
-        "shared.h": "c",
-        "debug.h": "c",
-        "vector": "c"
-    }
-}
