@@ -29,30 +29,32 @@ void write_chunk(Chunk *chunk, uint8_t byte, Line line)
     // The previous op-code(s) also belong to the same line, so
     // we just increment it's `spans` field to signify that this
     // byte belongs originates from the same line.
-    //
-    // TODO: is it worth checking for overflow in spans ?
-    // is one line really going to compile to more than 256 bytes of bytecode ?
     {
-        chunk->lines[chunk->line_count - 1].spans += 1;
-    }
-    else
-    // We haven't seen this line before, so append a new LineUnit to the
-    // lines array (ensuring enough space).
-    {
-        if (chunk->line_count + 1 > chunk->line_capacity)
+        if (chunk->lines[chunk->line_count - 1].spans != UINT8_MAX)
         {
-            size_t old_capacity = chunk->line_capacity;
-            chunk->line_capacity = GROW_CAPACITY(chunk->line_capacity);
-            chunk->lines = GROW_ARRAY(LineUnit, chunk->lines, old_capacity, chunk->line_capacity);
+            chunk->lines[chunk->line_count - 1].spans += 1;
+
+            chunk->code[chunk->count] = byte;
+            chunk->count++;
+            return;
         }
-
-        LineUnit new_unit;
-        new_unit.line = line;
-        new_unit.spans = 1;
-
-        chunk->lines[chunk->line_count] = new_unit;
-        chunk->line_count++;
     }
+
+    // If this line already has 255 op-codes, or if it's a new line,
+    // we need to create a new line unit.
+    if (chunk->line_count + 1 > chunk->line_capacity)
+    {
+        size_t old_capacity = chunk->line_capacity;
+        chunk->line_capacity = GROW_CAPACITY(chunk->line_capacity);
+        chunk->lines = GROW_ARRAY(LineUnit, chunk->lines, old_capacity, chunk->line_capacity);
+    }
+
+    LineUnit new_unit;
+    new_unit.line = line;
+    new_unit.spans = 1;
+
+    chunk->lines[chunk->line_count] = new_unit;
+    chunk->line_count++;
 
     chunk->code[chunk->count] = byte;
     chunk->count++;
