@@ -25,6 +25,6 @@ typedef struct
 void init_vm(VmState *state);
 void free_vm(VmState *state);
 
-InterpretResult interpret(VmState *state, Chunk *code);
+InterpretResult interpret(VmState *state, const char *source);
 
 #endif

@@ -2,6 +2,7 @@
 
 #include "vm.h"
 #include "debug.h"
+#include "compiler.h"
 
 static void reset_stack(VmState *state)
 {
@@ -114,10 +115,9 @@ static InterpretResult run(VmState *state)
 #undef READ_CONST
 #undef BINARY_OP
 
-InterpretResult interpret(VmState *state, Chunk *chunk)
+InterpretResult interpret(VmState *state, const char *source)
 {
-    state->chunk = chunk;
-    state->ip = state->chunk->code;
-
-    return run(state);
+    compile(source);
+    // todo
+    return INTERPRET_OK;
 }
