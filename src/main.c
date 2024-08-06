@@ -11,11 +11,14 @@ int main(int argc, char const *argv[])
 	Chunk chunk;
 	init_chunk(&chunk);
 
-	write_const(&chunk, 12.0, 3);
-	write_const(&chunk, 24.0, 3);
-	write_chunk(&chunk, OP_ADD, 3);
-	write_const(&chunk, 12.0, 3);
-	write_chunk(&chunk, OP_DIVIDE, 3);
+	write_const(&chunk, 6.0, 3);
+
+	for (int i = 0; i < 500; i++)
+	{
+		write_const(&chunk, 6.0, 3);
+		write_chunk(&chunk, OP_NEGATE, 3);
+		write_chunk(&chunk, OP_ADD, 3);
+	}
 
 	write_chunk(&chunk, OP_RETURN, 4);
 

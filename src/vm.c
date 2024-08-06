@@ -84,7 +84,7 @@ static InterpretResult run(VmState *state)
         }
 
         case OP_NEGATE:
-            push(state, -pop(state));
+            *(state->stack_top - 1) = -*(state->stack_top - 1);
             break;
 
         case OP_ADD:
