@@ -25,23 +25,23 @@ void write_chunk(Chunk *chunk, uint8_t byte, Line line)
         chunk->code = GROW_ARRAY(uint8_t, chunk->code, old_capacity, chunk->capacity);
     }
 
-    if ((chunk->line_count > 0) && (chunk->lines[chunk->line_count - 1].line == line))
+    chunk->code[chunk->count] = byte;
+    chunk->count++;
+
+    if ((chunk->line_count != 0) && (chunk->lines[chunk->line_count - 1].line == line))
     // The previous op-code(s) also belong to the same line, so
     // we just increment it's `spans` field to signify that this
-    // byte belongs originates from the same line.
+    // byte originates from the same line.
     {
-        if (chunk->lines[chunk->line_count - 1].spans != UINT8_MAX)
+        if (chunk->lines[chunk->line_count - 1].spans < UINT8_MAX)
         {
             chunk->lines[chunk->line_count - 1].spans += 1;
-
-            chunk->code[chunk->count] = byte;
-            chunk->count++;
             return;
         }
     }
 
-    // If this line already has 255 op-codes, or if it's a new line,
-    // we need to create a new line unit.
+    // If this line already has 256 op-codes, or if it's a new line,
+    // we need to create a new line unit and append it.
     if (chunk->line_count + 1 > chunk->line_capacity)
     {
         size_t old_capacity = chunk->line_capacity;
@@ -55,9 +55,6 @@ void write_chunk(Chunk *chunk, uint8_t byte, Line line)
 
     chunk->lines[chunk->line_count] = new_unit;
     chunk->line_count++;
-
-    chunk->code[chunk->count] = byte;
-    chunk->count++;
 }
 
 uint16_t get_line(Chunk *chunk, size_t index)

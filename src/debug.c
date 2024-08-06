@@ -66,7 +66,7 @@ size_t disassemble_instruction(Chunk *chunk, size_t offset)
         return print_long_constant_instruction(chunk, offset);
 
     default:
-        printf("Unknown opcode (%d)", instruction);
+        printf("Unknown opcode (%d)\n", instruction);
         return offset + 1;
     }
 }
@@ -78,20 +78,19 @@ void disassemble_chunk(Chunk *chunk, const char *name)
 {
     printf("== %s ==\n", name);
 
+    size_t spans_acc = 0;
     size_t offset = 0;
-    size_t prev_offset = 0;
 
-    for (size_t line_unit_offset = 0; line_unit_offset < chunk->line_count; line_unit_offset++)
+    for (size_t i = 0; i < chunk->line_count; i++)
     {
-        printf("%-4d ", chunk->lines[line_unit_offset].line);
-        offset = disassemble_instruction(chunk, offset);
+        printf("%-4d ====\n", chunk->lines[i].line);
 
-        while (offset < prev_offset + chunk->lines[line_unit_offset].spans)
+        spans_acc += chunk->lines[i].spans;
+
+        while (offset < spans_acc)
         {
             printf("     ");
             offset = disassemble_instruction(chunk, offset);
         }
-
-        prev_offset = offset;
     }
 }
